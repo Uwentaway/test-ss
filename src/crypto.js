@@ -7,6 +7,8 @@ class CustomCrypto {
     this.keySize = 16; // 128 bits
     this.ivSize = 12;  // 96 bits for GCM
     this.tagSize = 16; // 128 bits authentication tag
+    
+    // 确保所有属性都已设置后再调用 deriveKey
     this.key = this.deriveKey(password);
   }
 
@@ -15,8 +17,9 @@ class CustomCrypto {
     const salt = Buffer.from('custom-salt-2025', 'utf8');
     // 确保password是Buffer类型
     const passwordBuffer = Buffer.isBuffer(password) ? password : Buffer.from(password, 'utf8');
-    // 明确指定keylen参数
-    return crypto.pbkdf2Sync(passwordBuffer, salt, 10000, this.keySize, 'sha256');
+    // 明确指定所有参数，确保keySize是数字
+    const keySize = this.keySize || 16; // 提供默认值作为备用
+    return crypto.pbkdf2Sync(passwordBuffer, salt, 10000, keySize, 'sha256');
   }
 
   // 生成随机IV (GCM使用96位IV)

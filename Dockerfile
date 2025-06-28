@@ -19,6 +19,10 @@ RUN npm ci --only=production && \
 COPY src/ ./src/
 COPY test/ ./test/
 COPY README.md ./
+COPY docker-entrypoint.sh ./
+
+# 设置启动脚本权限
+RUN chmod +x docker-entrypoint.sh
 
 # 创建日志目录
 RUN mkdir -p /app/logs && \
@@ -42,5 +46,6 @@ ENV WEB_PORT=3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "const net = require('net'); const client = net.createConnection(8388, 'localhost'); client.on('connect', () => { client.end(); process.exit(0); }); client.on('error', () => process.exit(1));"
 
-# 默认启动命令（启动所有服务）
-CMD ["sh", "-c", "npm run server & npm run client & npm run web & wait"]
+# 使用自定义启动脚本
+ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["all"]
