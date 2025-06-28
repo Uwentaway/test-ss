@@ -29,7 +29,7 @@ sleep 2
 # 启动服务的函数
 start_server() {
     echo "🖥️  Starting Proxy Server on port ${SERVER_PORT:-8388}..."
-    npm run server > /app/logs/server.log 2>&1 &
+    node src/server.js > /app/logs/server.log 2>&1 &
     SERVER_PID=$!
     echo "   Server PID: $SERVER_PID"
 }
@@ -37,14 +37,14 @@ start_server() {
 start_client() {
     echo "📱 Starting Proxy Client on port ${CLIENT_LOCAL_PORT:-1088}..."
     sleep 3  # 等待服务器启动
-    npm run client > /app/logs/client.log 2>&1 &
+    node src/client.js > /app/logs/client.log 2>&1 &
     CLIENT_PID=$!
     echo "   Client PID: $CLIENT_PID"
 }
 
 start_web() {
     echo "🌐 Starting Web Interface on port ${WEB_PORT:-3000}..."
-    npm run web > /app/logs/web.log 2>&1 &
+    node src/web-server.js > /app/logs/web.log 2>&1 &
     WEB_PID=$!
     echo "   Web PID: $WEB_PID"
 }

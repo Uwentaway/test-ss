@@ -1,18 +1,18 @@
 // 配置文件
 const config = {
   server: {
-    host: '0.0.0.0',
-    port: 8388,
-    password: 'd2659a2f3239b815cf53bf7b34104cf5',
+    host: process.env.SERVER_HOST || '0.0.0.0',
+    port: parseInt(process.env.SERVER_PORT) || 8388,
+    password: process.env.PROXY_PASSWORD || 'd2659a2f3239b815cf53bf7b34104cf5',
     timeout: 30000,
     maxConnections: 1000
   },
   client: {
-    localHost: '127.0.0.1',
-    localPort: 1088,
-    serverHost: '0.0.0.0',
-    serverPort: 8388,
-    password: 'd2659a2f3239b815cf53bf7b34104cf5',
+    localHost: process.env.CLIENT_LOCAL_HOST || '127.0.0.1',
+    localPort: parseInt(process.env.CLIENT_LOCAL_PORT) || 1088,
+    serverHost: process.env.SERVER_HOST || '0.0.0.0',
+    serverPort: parseInt(process.env.SERVER_PORT) || 8388,
+    password: process.env.PROXY_PASSWORD || 'd2659a2f3239b815cf53bf7b34104cf5',
     timeout: 30000
   },
   encryption: {
@@ -31,8 +31,8 @@ const config = {
     statusError: 0x01
   },
   web: {
-    host: '0.0.0.0',
-    port: 3000,
+    host: process.env.WEB_HOST || '0.0.0.0',
+    port: parseInt(process.env.WEB_PORT) || 3000,
     title: 'Custom Shadowsocket Proxy'
   }
 };

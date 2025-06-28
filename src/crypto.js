@@ -3,11 +3,11 @@ const crypto = require('crypto');
 class CustomCrypto {
   constructor(password) {
     this.password = password;
-    this.key = this.deriveKey(password);
     this.algorithm = 'aes-128-gcm';
     this.keySize = 16; // 128 bits
     this.ivSize = 12;  // 96 bits for GCM
     this.tagSize = 16; // 128 bits authentication tag
+    this.key = this.deriveKey(password);
   }
 
   // 密钥派生函数 - 使用PBKDF2
@@ -15,6 +15,7 @@ class CustomCrypto {
     const salt = Buffer.from('custom-salt-2025', 'utf8');
     // 确保password是Buffer类型
     const passwordBuffer = Buffer.isBuffer(password) ? password : Buffer.from(password, 'utf8');
+    // 明确指定keylen参数
     return crypto.pbkdf2Sync(passwordBuffer, salt, 10000, this.keySize, 'sha256');
   }
 
