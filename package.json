@@ -17,7 +17,8 @@
     "http": "^0.0.1-security",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "qrcode": "^1.5.3"
   },
   "engines": {
     "node": ">=18.0.0"
