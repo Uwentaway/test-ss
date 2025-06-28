@@ -29,6 +29,11 @@ const config = {
     commandUdp: 0x03,
     statusSuccess: 0x00,
     statusError: 0x01
+  },
+  web: {
+    host: '0.0.0.0',
+    port: 3000,
+    title: 'Custom Shadowsocket Proxy'
   }
 };
 

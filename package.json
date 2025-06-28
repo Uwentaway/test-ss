@@ -7,10 +7,13 @@
   "scripts": {
     "server": "node src/server.js",
     "client": "node src/client.js",
-    "test": "node test/test.js"
+    "web": "node src/web-server.js",
+    "test": "node test/test.js",
+    "dev": "npm run web"
   },
   "dependencies": {
-    "crypto": "^1.0.1"
+    "crypto": "^1.0.1",
+    "qrcode": "^1.5.3"
   },
   "keywords": ["proxy", "shadowsocket", "encryption", "tunnel"],
   "author": "Bolt AI",
