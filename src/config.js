@@ -16,9 +16,10 @@ const config = {
     timeout: 30000
   },
   encryption: {
-    method: 'xor-advanced', // 自定义加密方法
-    keySize: 32,
-    ivSize: 16
+    method: 'aes-128-gcm', // 使用AES-128-GCM加密
+    keySize: 16,  // 128 bits
+    ivSize: 12,   // 96 bits for GCM
+    tagSize: 16   // 128 bits authentication tag
   },
   protocol: {
     version: 1,

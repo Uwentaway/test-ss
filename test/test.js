@@ -157,24 +157,43 @@ class ProxyTester {
     });
   }
 
-  // 测试加密功能
+  // 测试AES-GCM加密功能
   async testEncryption() {
     const CustomCrypto = require('../src/crypto');
     const crypto = new CustomCrypto('test-password');
     
-    const testData = Buffer.from('Hello, World! This is a test message for encryption.');
-    const { encrypted, iv } = crypto.encrypt(testData);
-    const decrypted = crypto.decrypt(encrypted, iv);
+    const testData = Buffer.from('Hello, World! This is a test message for AES-128-GCM encryption.');
+    
+    // 测试新的加密/解密方法
+    const encryptedPacket = crypto.encryptPacket(testData);
+    const decrypted = crypto.decryptPacket(encryptedPacket);
     
     if (!testData.equals(decrypted)) {
-      throw new Error('Encryption/decryption test failed');
+      throw new Error('AES-GCM encryption/decryption test failed');
     }
     
-    // 测试MAC验证
-    const mac = crypto.generateMAC(encrypted, iv);
-    if (!crypto.verifyMAC(encrypted, iv, mac)) {
-      throw new Error('MAC verification test failed');
+    // 测试单独的加密/解密方法
+    const iv = crypto.generateIV();
+    const { encrypted, authTag } = crypto.encrypt(testData, iv);
+    const decrypted2 = crypto.decrypt(encrypted, iv, authTag);
+    
+    if (!testData.equals(decrypted2)) {
+      throw new Error('AES-GCM separate encryption/decryption test failed');
     }
+    
+    // 测试认证失败情况
+    try {
+      const tamperedData = Buffer.from(encrypted);
+      tamperedData[0] ^= 0xFF; // 篡改数据
+      crypto.decrypt(tamperedData, iv, authTag);
+      throw new Error('Authentication should have failed');
+    } catch (error) {
+      if (!error.message.includes('Decryption failed')) {
+        throw error;
+      }
+    }
+    
+    logWithTime('AES-128-GCM encryption tests passed');
   }
 
   // 测试协议解析
@@ -197,6 +216,29 @@ class ProxyTester {
     if (parsedResponse.status !== 0 || parsedResponse.message !== 'Success') {
       throw new Error('Protocol response test failed');
     }
+    
+    logWithTime('Protocol parsing tests passed');
+  }
+
+  // 测试密钥派生
+  async testKeyDerivation() {
+    const CustomCrypto = require('../src/crypto');
+    
+    const crypto1 = new CustomCrypto('test-password');
+    const crypto2 = new CustomCrypto('test-password');
+    const crypto3 = new CustomCrypto('different-password');
+    
+    // 相同密码应该生成相同密钥
+    if (!crypto1.key.equals(crypto2.key)) {
+      throw new Error('Same password should generate same key');
+    }
+    
+    // 不同密码应该生成不同密钥
+    if (crypto1.key.equals(crypto3.key)) {
+      throw new Error('Different passwords should generate different keys');
+    }
+    
+    logWithTime('Key derivation tests passed');
   }
 }
 
@@ -205,7 +247,8 @@ async function runTests() {
   const tester = new ProxyTester();
   
   // 添加测试用例
-  tester.addTest('Encryption/Decryption', () => tester.testEncryption());
+  tester.addTest('AES-GCM Encryption/Decryption', () => tester.testEncryption());
+  tester.addTest('Key Derivation', () => tester.testKeyDerivation());
   tester.addTest('Protocol Parsing', () => tester.testProtocol());
   tester.addTest('TCP Connection', () => tester.testTCPConnection());
   

@@ -23,7 +23,8 @@ class ProxyServer {
 
     server.listen(config.server.port, config.server.host, () => {
       logWithTime(`Custom Proxy Server listening on ${config.server.host}:${config.server.port}`);
-      logWithTime(`Server started with password: ${config.server.password.substring(0, 8)}...`);
+      logWithTime(`Server started with AES-128-GCM encryption`);
+      logWithTime(`Password: ${config.server.password.substring(0, 8)}...`);
     });
 
     server.on('error', (err) => {
@@ -59,7 +60,7 @@ class ProxyServer {
 
           buffer = result.remaining;
           
-          // 解密请求数据
+          // 解密请求数据 (使用新的AES-GCM方法)
           const decryptedData = await this.decryptClientData(result.data);
           if (!decryptedData) {
             clientSocket.destroy();
@@ -154,21 +155,8 @@ class ProxyServer {
 
   decryptClientData(encryptedData) {
     try {
-      if (encryptedData.length < 24) { // IV(16) + MAC(8)
-        return null;
-      }
-
-      const iv = encryptedData.slice(0, 16);
-      const mac = encryptedData.slice(16, 24);
-      const ciphertext = encryptedData.slice(24);
-
-      // 验证MAC
-      if (!this.crypto.verifyMAC(ciphertext, iv, mac)) {
-        logWithTime('MAC verification failed');
-        return null;
-      }
-
-      return this.crypto.decrypt(ciphertext, iv);
+      // 使用新的AES-GCM解密方法
+      return this.crypto.decryptPacket(encryptedData);
     } catch (error) {
       logWithTime(`Decryption error: ${error.message}`);
       return null;
@@ -176,9 +164,8 @@ class ProxyServer {
   }
 
   encryptServerData(data) {
-    const { encrypted, iv } = this.crypto.encrypt(data);
-    const mac = this.crypto.generateMAC(encrypted, iv);
-    return Buffer.concat([iv, mac, encrypted]);
+    // 使用新的AES-GCM加密方法
+    return this.crypto.encryptPacket(data);
   }
 }
 

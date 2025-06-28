@@ -22,6 +22,7 @@ class ProxyClient {
 
     server.listen(config.client.localPort, config.client.localHost, () => {
       logWithTime(`Proxy Client listening on ${config.client.localHost}:${config.client.localPort}`);
+      logWithTime(`Using AES-128-GCM encryption`);
       logWithTime(`Forwarding to server: ${config.client.serverHost}:${config.client.serverPort}`);
     });
 
@@ -200,27 +201,14 @@ class ProxyClient {
   }
 
   encryptClientData(data) {
-    const { encrypted, iv } = this.crypto.encrypt(data);
-    const mac = this.crypto.generateMAC(encrypted, iv);
-    return Buffer.concat([iv, mac, encrypted]);
+    // 使用新的AES-GCM加密方法
+    return this.crypto.encryptPacket(data);
   }
 
   decryptServerData(encryptedData) {
     try {
-      if (encryptedData.length < 24) {
-        return null;
-      }
-
-      const iv = encryptedData.slice(0, 16);
-      const mac = encryptedData.slice(16, 24);
-      const ciphertext = encryptedData.slice(24);
-
-      if (!this.crypto.verifyMAC(ciphertext, iv, mac)) {
-        logWithTime('MAC verification failed');
-        return null;
-      }
-
-      return this.crypto.decrypt(ciphertext, iv);
+      // 使用新的AES-GCM解密方法
+      return this.crypto.decryptPacket(encryptedData);
     } catch (error) {
       logWithTime(`Decryption error: ${error.message}`);
       return null;
