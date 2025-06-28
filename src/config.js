@@ -1,18 +1,18 @@
 // 配置文件
 const config = {
   server: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: 8388,
-    password: 'custom-proxy-key-2025',
+    password: 'd2659a2f3239b815cf53bf7b34104cf5',
     timeout: 30000,
     maxConnections: 1000
   },
   client: {
     localHost: '127.0.0.1',
     localPort: 1088,
-    serverHost: '127.0.0.1',
+    serverHost: '0.0.0.0',
     serverPort: 8388,
-    password: 'custom-proxy-key-2025',
+    password: 'd2659a2f3239b815cf53bf7b34104cf5',
     timeout: 30000
   },
   encryption: {
