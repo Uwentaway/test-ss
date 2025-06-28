@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  shadowsocket-proxy:
+    build: .
+    container_name: custom-shadowsocket-proxy
+    restart: unless-stopped
+    ports:
+      - "8388:8388"   # 代理服务器端口
+      - "1088:1088"   # 客户端本地端口
+      - "3000:3000"   # Web管理界面端口
+    environment:
+      - NODE_ENV=production
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8388
+      - CLIENT_LOCAL_HOST=127.0.0.1
+      - CLIENT_LOCAL_PORT=1088
+      - WEB_PORT=3000
+      - PROXY_PASSWORD=d2659a2f3239b815cf53bf7b34104cf5
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - proxy-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "const net = require('net'); const client = net.createConnection(8388, 'localhost'); client.on('connect', () => { client.end(); process.exit(0); }); client.on('error', () => process.exit(1));"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  proxy-network:
+    driver: bridge
+
+volumes:
+  logs:
+    driver: local
