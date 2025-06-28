@@ -13,7 +13,9 @@ class CustomCrypto {
   // 密钥派生函数 - 使用PBKDF2
   deriveKey(password) {
     const salt = Buffer.from('custom-salt-2025', 'utf8');
-    return crypto.pbkdf2Sync(password, salt, 10000, this.keySize, 'sha256');
+    // 确保password是Buffer类型
+    const passwordBuffer = Buffer.isBuffer(password) ? password : Buffer.from(password, 'utf8');
+    return crypto.pbkdf2Sync(passwordBuffer, salt, 10000, this.keySize, 'sha256');
   }
 
   // 生成随机IV (GCM使用96位IV)
