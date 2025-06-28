@@ -1,21 +1,32 @@
 {
   "name": "custom-shadowsocket-proxy",
   "version": "1.0.0",
-  "description": "Custom shadowsocket proxy service with unique protocol implementation",
-  "main": "index.js",
-  "private": true,
+  "description": "Custom Shadowsocks proxy implementation",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node start.js",
     "server": "node src/server.js",
     "client": "node src/client.js",
     "web": "node src/web-server.js",
     "test": "node test/test.js",
-    "dev": "npm run web"
+    "dev": "node start.js"
   },
   "dependencies": {
     "crypto": "^1.0.1",
-    "qrcode": "^1.5.3"
+    "net": "^1.0.2",
+    "http": "^0.0.1-security",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "util": "^0.12.5"
   },
-  "keywords": ["proxy", "shadowsocket", "encryption", "tunnel"],
-  "author": "Bolt AI",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "shadowsocks",
+    "proxy",
+    "socks5"
+  ],
+  "author": "Custom Proxy Team",
   "license": "MIT"
 }
